@@ -1,97 +1,118 @@
-<!-- chat/templates/chat/index.html -->
+{% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <meta charset="utf-8"/>
-    <title>Chat Rooms</title>
-    <style>
-        .container {
-            vertical-align: top;
-            display: inline-block;
-            width:400px;
-            border: 1px solid black;
-            margin-bottom: 50px;
-        }
-        table, tr, td, th {
-            border: 1px solid black;
-        }
-    </style>
+    <meta charset="UTF-8">  
+    <title>Enter your chatroom!</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="{% static 'chat_app/css/style.css' %}">  
 </head>
+
 <body>
-    <div class="container">
-        <h2>Hello {{this_user.first_name}}</h2>
-        What chat room would you like to enter?<br/>
-        <input id="room-name-input" type="text" size="40"/><br/>
-        <input id="room-name-submit" type="button" value="Enter"/>
-        <a href="#" >User profile</a>
-    </div>
-    <div class="container">
-        Find Friend
-        <!-- show all users available with button to add -->
-        <table>
-            <tr>
-                <th>First Name</th>
-                <th>Last Name</th>
-                <th>Email</th>
-                <th>Actions</th>
-            </tr>
-            {% for user in all_users %}
-            <tr>
-                <td>{{user.first_name}}</td>
-                <td>{{user.last_name}}</td>
-                <td>{{user.email}}</td>
-                <td>
-                    <form action="/chat/add_friend/" method="POST">
-                        {% csrf_token %}
-                        <input type="hidden" name="add_friend" value="{{user.id}}">
-                        <input type="submit" value="Add User">
-                    </form>
-                </td>
-            </tr>
-            {% endfor %}
-        </table>
-    </div>
 
-    <div class="container">
-        My Friends
-        <!-- show all users available with button to add -->
-        <table>
-            <tr>
-                <th>First Name</th>
-                <th>Last Name</th>
-                <th>Email</th>
-                <th>Actions</th>
-            </tr>
-            {% for friend in all_friends %}
-            <tr>
-                <td>{{friend.first_name}}</td>
-                <td>{{friend.last_name}}</td>
-                <td>{{friend.email}}</td>
-                <td>
-                    <form action="#" method="POST">
-                        <input type="hidden" value="add_friend" name="{{user.id}}">
-                        <input type="submit" value="Unadd User">
-                    </form>
-                </td>
-            </tr>
-            {% endfor %}
-        </table>
-    </div>
-
+    <div class="container" id="index_page">
+        <div id="index_top">
+            <p>Rotten Banana</p>
+        </div>
         
+        <div class="menu_container" onclick="myFunction()">
+            <div class="bar1"></div>
+            <div class="bar2"></div>
+            <div class="bar3"></div>
+        </div>
 
-    <script>
-        document.querySelector('#room-name-input').focus();
-        document.querySelector('#room-name-input').onkeyup = function(e) {
-            if (e.keyCode === 13) {  // enter, return
-                document.querySelector('#room-name-submit').click();
-            }
-        };
+        <div id="index_profile">
+            <p>Update profile picture</p>
+            <p>Update status</p>
+            <p>Age</p>
+            <p>Gender</p>
+        </div>
 
-        document.querySelector('#room-name-submit').onclick = function(e) {
-            var roomName = document.querySelector('#room-name-input').value;
-            window.location.pathname = '/chat/' + roomName + '/';
+        <div class="row" id="index_middle">
+            <div class="col" id="index_left">
+                <h5 class="index_text">What chat room would you like to enter?</h5>
+                <input id="room-name-input" type="text" size="16" placeholder="Example: 123"/><br/>
+                <input id="room-name-submit" class="btn btn-primary btn-lg" type="button" value="Enter"/>
+            </div>
+
+            <div class="col" id="index_right">
+                <h5 class="index_text">Your Friends</h5>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">First</th>
+                        <th scope="col">Last</th>
+                        <th scope="col">Handle</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                        <th scope="row">1</th>
+                        <td>Mark</td>
+                        <td>Otto</td>
+                        <td>@mdo</td>
+                        </tr>
+                        <tr>
+                        <th scope="row">2</th>
+                        <td>Jacob</td>
+                        <td>Thornton</td>
+                        <td>@fat</td>
+                        </tr>
+                        <tr>
+                        <th scope="row">3</th>
+                        <td>Larry</td>
+                        <td>the Bird</td>
+                        <td>@twitter</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">3</th>
+                            <td>Larry</td>
+                            <td>the Bird</td>
+                            <td>@twitter</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+
+            </div>
+        </div>
+
+        <div class="input-group mb-3" id="index_search">
+            <input type="text" class="form-control" placeholder="Search for a new friend" aria-label="Recipient's username" aria-describedby="basic-addon2">
+            <div class="input-group-append">
+                <span class="input-group-text" id="basic-addon2">Search</span>
+            </div>
+        </div>
+
+    </div>
+
+
+
+<script>
+    document.querySelector('#room-name-input').focus();
+    document.querySelector('#room-name-input').onkeyup = function(e) {
+        if (e.keyCode === 13) {  // enter, return
+            document.querySelector('#room-name-submit').click();
+        }
+    };
+
+    document.querySelector('#room-name-submit').onclick = function(e) {
+        var roomName = document.querySelector('#room-name-input').value;
+        window.location.pathname = '/chat/' + roomName + '/';
+    };
+    function myFunction() {
+        var x = document.getElementById("index_profile");
+        if (x.style.display === "none") {
+            x.style.display = "block";
+        } else {
+            x.style.display = "none";
         };
-    </script>
+        
+    };
+</script>
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 </body>
 </html>
