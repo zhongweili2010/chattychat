@@ -28,6 +28,7 @@ class ChatConsumer(WebsocketConsumer):
         }))
 
     def disconnect(self, close_code):
+        
         # Leave room group
         print('leaving the room!!!!!')
 
