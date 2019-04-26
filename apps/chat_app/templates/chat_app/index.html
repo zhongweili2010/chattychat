@@ -4,12 +4,82 @@
 <head>
     <meta charset="utf-8"/>
     <title>Chat Rooms</title>
+    <style>
+        .container {
+            vertical-align: top;
+            display: inline-block;
+            width:400px;
+            border: 1px solid black;
+            margin-bottom: 50px;
+        }
+        table, tr, td, th {
+            border: 1px solid black;
+        }
+    </style>
 </head>
 <body>
-    What chat room would you like to enter?<br/>
-    <input id="room-name-input" type="text" size="100"/><br/>
-    <input id="room-name-submit" type="button" value="Enter"/>
-    <a href="#" >User profile</a>
+    <div class="container">
+        <h2>Hello {{this_user.first_name}}</h2>
+        What chat room would you like to enter?<br/>
+        <input id="room-name-input" type="text" size="40"/><br/>
+        <input id="room-name-submit" type="button" value="Enter"/>
+        <a href="#" >User profile</a>
+    </div>
+    <div class="container">
+        Find Friend
+        <!-- show all users available with button to add -->
+        <table>
+            <tr>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Email</th>
+                <th>Actions</th>
+            </tr>
+            {% for user in all_users %}
+            <tr>
+                <td>{{user.first_name}}</td>
+                <td>{{user.last_name}}</td>
+                <td>{{user.email}}</td>
+                <td>
+                    <form action="/chat/add_friend/" method="POST">
+                        {% csrf_token %}
+                        <input type="hidden" name="add_friend" value="{{user.id}}">
+                        <input type="submit" value="Add User">
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+    <div class="container">
+        My Friends
+        <!-- show all users available with button to add -->
+        <table>
+            <tr>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Email</th>
+                <th>Actions</th>
+            </tr>
+            {% for friend in all_friends %}
+            <tr>
+                <td>{{friend.first_name}}</td>
+                <td>{{friend.last_name}}</td>
+                <td>{{friend.email}}</td>
+                <td>
+                    <form action="#" method="POST">
+                        <input type="hidden" value="add_friend" name="{{user.id}}">
+                        <input type="submit" value="Unadd User">
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+        
+
     <script>
         document.querySelector('#room-name-input').focus();
         document.querySelector('#room-name-input').onkeyup = function(e) {

@@ -10,14 +10,34 @@
     <input id="chat-message-input" type="text" size="100"/><br/>
     <input id="chat-message-submit" type="button" value="Send"/>
     <a href="#" >User profile</a>
+    <a href="/chat">Go Back</a>
 </body>
 <script>
 
     var roomName = {{ room_name_json }};
+    var this_user = {{ this_user_json }};
+    console.log('hi im here');
+    console.log(this_user);
+
 
     var chatSocket = new WebSocket(
         'ws://' + window.location.host +
         '/ws/chat/' + roomName + '/');
+
+    chatSocket.onopen = function() {
+        chatSocket.send(JSON.stringify({
+            'message' : this_user + ' has joined the room'
+        }))
+    }
+
+    // setTimeout(function(){
+    //     chatSocket.send(JSON.stringify({
+    //     'user_joined' : this_user + ' has joined the room'
+    // }, 5000))
+    // })
+    // chatSocket.send(JSON.stringify({
+    //     'user_joined' : this_user + ' has joined the room'
+    // }))
     
     chatSocket.onmessage = function(e) {
         
@@ -27,6 +47,9 @@
     };
 
     chatSocket.onclose = function(e) {
+        chatSocket.send(JSON.stringify({
+            'message' : this_user + ' has left the room'
+        }))
         console.error('Chat socket closed unexpectedly');
     };
 
