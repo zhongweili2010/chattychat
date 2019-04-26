@@ -5,12 +5,13 @@ from django.urls import reverse
 from django.contrib.auth import login as lg,logout,authenticate
 from django.contrib.auth.decorators import login_required
 import re
+from rest_framework import viewsets
 
+from .serializers import UserSerializer
 
 def login_page(request):
     # User.objects.calling()
     return render(request,'user_app/login_page.html')
-
 
 def register(request):
     if request.method=="POST":
@@ -27,8 +28,7 @@ def register(request):
                 username=request.POST['email'],
                 password=request.POST['password'],
             )
-            print('user created')
-            
+
             return redirect( reverse('login_page'))
     else:
         return HttpResponse('bad post')
@@ -48,7 +48,6 @@ def login(request):
             messages.info(request,'log in failed',extra_tags='email_login')        
     return redirect('/login/logout')
 
-
 def logout_user(request):
     logout(request)
     request.session.flush()
@@ -58,8 +57,21 @@ def logout_user(request):
 def test(request):
     return HttpResponse('test site here')
 
+
 @login_required(login_url='/login')
-def success(request):
-    return render(request,'login_and_registration/success.html')
+def user_profile(request):
 
+    return HttpResponse('placeholder for user profile')
 
+@login_required(login_url='/login')
+def add_friend(request,number):
+
+    friend_id=User.objects.get(id=number)
+    request.user.friend.add(friend_id)
+    print('added friend')
+
+    return redirect('/chat')
+
+class UserViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class=UserSerializer
