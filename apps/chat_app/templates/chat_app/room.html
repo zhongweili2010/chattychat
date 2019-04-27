@@ -15,8 +15,8 @@
 <script>
     var roomName = {{ room_name_json }};
     var this_user = {{ this_user_json }};
-    console.log('hi im here');
-    console.log(this_user);
+    // console.log('hi im here');
+    // console.log(this_user);
 
 
     var chatSocket = new WebSocket(
@@ -46,7 +46,7 @@
     };
 
     chatSocket.onopen =function(e) {
-        document.querySelector('#chat-log').value += ('uwelcome' + '\n');
+        document.querySelector('#chat-log').value += ('welcome' + '\n');
     };
 
     chatSocket.onclose = function(e) {

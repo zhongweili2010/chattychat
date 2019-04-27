@@ -8,7 +8,7 @@ from ..user_app.models import User
 from channels.auth import login,logout
 class ChatConsumer(WebsocketConsumer):
     def connect(self):
-        self.user=self.scope['user']
+        self.user = self.scope['user']
         
         self.room_name = self.scope['url_route']['kwargs']['room_name']
         
@@ -23,12 +23,17 @@ class ChatConsumer(WebsocketConsumer):
         # async_to_sync(login)(self.scope,self.scope['user'])
         # self.scope["session"].save()
         self.accept()
-        self.send(text_data=json.dumps({
-            'message': f"{self.scope['user']} entered the room"
-        }))
 
-    def disconnect(self, close_code):
-        
+        async_to_sync(self.channel_layer.group_send)(
+            self.room_group_name,
+            {
+                'type': 'chat_message',
+                'message': str(self.scope['user'].first_name)+' entered the room',
+            }
+        )
+
+
+    def disconnect(self, close_code):   
         # Leave room group
         print('leaving the room!!!!!')
 
@@ -39,12 +44,15 @@ class ChatConsumer(WebsocketConsumer):
                 'message': str(self.scope['user'].first_name)+' left the room',
             }
         )
-
         async_to_sync(self.channel_layer.group_discard)(
             self.room_group_name,
             self.channel_name
         )
         # async_to_sync(logout)(self.scope)
+    
+    
+    
+    
     # Receive message from WebSocket
     def receive(self, text_data):
         text_data_json = json.loads(text_data)
@@ -58,11 +66,14 @@ class ChatConsumer(WebsocketConsumer):
                 'message': message
             }
         )
+
+
+        
     # Receive message from room group
     def chat_message(self, event):
         message = event['message']
         Message.objects.create(content=message,sender=self.user)
-
+        message=str(self.scope['user'].first_name)+ ' says: '+message
         # Send message to WebSocket
         self.send(text_data=json.dumps({
             'message': message

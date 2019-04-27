@@ -18,8 +18,7 @@ def index(request):
 
 @login_required(login_url='/login')
 def room(request,room_name):
-    this_email = request.user.email
-    print(this_email)
+    this_email = request.user.first_name
     context = {
         "room_name_json" : mark_safe(json.dumps(room_name)),
         "this_user_json" : mark_safe(json.dumps(this_email)),
