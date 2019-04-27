@@ -25,7 +25,7 @@ def room(request,room_name):
     }
 
     return render(request,'chat_app/room.html', context)
-
+@login_required(login_url='/login')
 def add_friend(request):
     if request.method=="POST":
         #logic to add user
