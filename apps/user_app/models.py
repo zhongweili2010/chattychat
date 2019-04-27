@@ -68,10 +68,14 @@ class User(AbstractUser):
     # interest=models.CharField(max_length=25) 
     created_at=models.DateTimeField(auto_now_add=True)
     updated_at=models.DateTimeField(auto_now=True)
-    # password=models.CharField(max_length=80)
-    birthday=models.DateTimeField(null=True)
-    # single=models.BooleanField(null=True)
-    # bio=models.TextField(null=True)
     objects=UserManager()
+
+    birthday=models.DateTimeField(null=True)
+    single=models.BooleanField(null=True)
+    bio=models.TextField(null=True)
+    
+    nick_name=models.CharField(max_length=25,null=True)
+    public=models.BooleanField(default=True)
+    friends=models.ManyToManyField("self",related_name="friends_of")
 # Create your models here.
 

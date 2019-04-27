@@ -38,5 +38,16 @@ def add_friend(request):
         this_user.friends.add(this_friend)
         return redirect('/chat')
 
+# @receiver(user_logged_in)
+# def friend_loged_in(sender,user,**kwargs):
+#     this_user=request
+#     current_user=request.user
+#     # print(this_user.first)
+#     print(f"your friend {this_user.first_name}is logged on")
+
+
+
+
+
 # Create your views here.
 

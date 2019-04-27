@@ -1,55 +1,74 @@
-<!-- chat/templates/chat/room.html -->
+{% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <meta charset="utf-8"/>
-    <title>Chat Room</title>
+    <meta charset="UTF-8">  
+    <title>Rotten Banana: Chat App</title>
+    	
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="{% static 'chat_app/css/style.css' %}">  
 </head>
-<body>
-    <textarea id="chat-log" cols="100" rows="20"></textarea><br/>
-    <input id="chat-message-input" type="text" size="100"/><br/>
-    <input id="chat-message-submit" type="button" value="Send"/>
-    <a href="#" >User profile</a>
-    <a href="/chat">Go Back</a>
-</body>
+<body id="room_page_body">
+    <div class="the_big_container" onclick="menuFunction()">
+        <div class="the_first the_container"></div>
+        <div class="the_container"></div>
+        <div class="the_container"></div>
+    </div>
+
+    <!-- <div id="mayne">
+        This is my mayhe!!@#!@#!@#!@#!@#
+
+    </div> -->
+
+    <div class="container" id="room_page">
+        
+        <textarea id="chat-log" disabled="yes"></textarea>
+        <div class="input-group mb-3">
+            <input id="chat-message-input" type="text" class="form-control" placeholder="Say something..." aria-label="Recipient's username" aria-describedby="button-addon2">
+            <div class="input-group-append">
+                <input id="chat-message-submit" type="button" value="Send" class="btn btn-outline-secondary" style="background-color: rgba(122, 122, 212, 0.63); font-weight: bold; color: black;"></button>
+            </div>
+        </div>
+
+    </div>
+
 <script>
 
-    var roomName = {{ room_name_json }};
-    var this_user = {{ this_user_json }};
-    console.log('hi im here');
-    console.log(this_user);
+    function menuFunction() {
+        var x = document.getElementById("mayne");
+        if (x.style.display === "none") {
+        x.style.display = "block";
+        } else {
+        x.style.display = "none";
+        }
+    };
 
+
+    // Warning... Ian edited the below...
+    var roomName = {{ room_name_json }};
+
+    // Warning... Ian edited the above...
 
     var chatSocket = new WebSocket(
         'ws://' + window.location.host +
         '/ws/chat/' + roomName + '/');
+    console.log(chatSocket);
 
-    chatSocket.onopen = function() {
-        chatSocket.send(JSON.stringify({
-            'message' : this_user + ' has joined the room'
-        }))
-    }
 
-    // setTimeout(function(){
-    //     chatSocket.send(JSON.stringify({
-    //     'user_joined' : this_user + ' has joined the room'
-    // }, 5000))
-    // })
-    // chatSocket.send(JSON.stringify({
-    //     'user_joined' : this_user + ' has joined the room'
-    // }))
-    
+    // Warning.... Ian edited the below...
     chatSocket.onmessage = function(e) {
         
         var data = JSON.parse(e.data);
         var message = data['message'];
+        console.log(data);
         document.querySelector('#chat-log').value += (message + '\n');
+        // document.querySelector('#chat-log').innerHTML += "<div class='each_chat'>" + message + "</div>";
     };
 
+    // warning... Ian edited the above
+
+
     chatSocket.onclose = function(e) {
-        chatSocket.send(JSON.stringify({
-            'message' : this_user + ' has left the room'
-        }))
         console.error('Chat socket closed unexpectedly');
     };
 
@@ -69,5 +88,12 @@
 
         messageInputDom.value = '';
     };
+
+    
+    
 </script>
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+</body>
 </html>

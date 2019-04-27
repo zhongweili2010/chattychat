@@ -33,6 +33,7 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     'apps.chat_app',
     'apps.user_app',
+    'rest_framework',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -76,7 +77,7 @@ CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
-            "hosts": [('192.168.99.100', 6379)],
+            "hosts": [('127.0.0.1', 6379)],
         },
     },
 }
@@ -92,7 +93,7 @@ DATABASES = {
 }
 PASSWORD_HASHERS =[
     'django.contrib.auth.hashers.BCryptSHA256PasswordHasher',
-    
+
 ]
 
 
@@ -135,3 +136,12 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 AUTH_USER_MODEL='user_app.User'
+
+REST_FRAMEWORK ={
+    'DEFAULT_PAGINATION_CLASS':'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE':10,
+    
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+    ]
+}
