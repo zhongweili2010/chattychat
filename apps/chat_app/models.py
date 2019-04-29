@@ -7,6 +7,16 @@ class Message(models.Model):
     updated_at=models.DateTimeField(auto_now=True)
     sender=models.ForeignKey(User,on_delete=models.SET_NULL,null=True,related_name='messages')
     
+class Client(models.Model):
+    channel_name=models.CharField(max_length=50)
+    created_at=models.DateTimeField(auto_now_add=True)
+    updated_at=models.DateTimeField(auto_now=True)
+    user=models.OneToOneField(User,on_delete=models.CASCADE,related_name='client_of')
+
+class ChatGroup(models.Model):
+    users=models.ManyToManyField(User,related_name="groups_of")
+    created_at=models.DateTimeField(auto_now_add=True)
+    updated_at=models.DateTimeField(auto_now=True)
 
 
 

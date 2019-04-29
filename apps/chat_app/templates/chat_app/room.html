@@ -38,15 +38,6 @@
 
 <script>
 
-    // function menuFunction() {
-    //     var x = document.getElementById("mayne");
-    //     if (x.style.display === "none") {
-    //     x.style.display = "block";
-    //     } else {
-    //     x.style.display = "none";
-    //     }
-    // };
-
 
     // Warning... Ian edited the below...
     var roomName = {{ room_name_json }};
@@ -56,8 +47,9 @@
 
     var chatSocket = new WebSocket(
         'ws://' + window.location.host +
-        '/ws/chat/' + roomName + '/');
+        '/ws/chat/' + roomName+ '/');
     console.log(chatSocket);
+
 
 
     // Warning.... Ian edited the below...
@@ -87,9 +79,11 @@
 
     document.querySelector('#chat-message-submit').onclick = function(e) {
         var messageInputDom = document.querySelector('#chat-message-input');
-        var message = '' + thisUser + ': ' + messageInputDom.value;
+        var username=document.querySelector('#username-input')
+        var message = messageInputDom.value;
         chatSocket.send(JSON.stringify({
-            'message': message
+            'message': message,
+            'receiver': username,
         }));
 
         messageInputDom.value = '';
