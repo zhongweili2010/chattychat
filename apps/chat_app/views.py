@@ -12,6 +12,7 @@ def index(request):
         "this_user" : request.user,
         "all_users" : User.objects.all().exclude(id = request.user.id),
         "all_friends" : request.user.friends.all(),
+        "this_user_json" : mark_safe(json.dumps(request.user.email)),
     }
     return render(request,'chat_app/index.html',context)
 

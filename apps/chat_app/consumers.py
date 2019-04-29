@@ -7,13 +7,20 @@ from .models import Message
 from ..user_app.models import User
 from channels.auth import login,logout
 class ChatConsumer(WebsocketConsumer):
+
+    # async def websocket_connect(self, event):
+    #     # Called when a new websocket connection is established
+    #     print("connected", event)
+
     def connect(self):
         self.user=self.scope['user']
+        #change status to online
+        self.user.status = 'online'
+        self.user.save()
         
         self.room_name = self.scope['url_route']['kwargs']['room_name']
         
         self.room_group_name = 'chat_%s' % self.room_name
-        
         
         # Join room group
         async_to_sync(self.channel_layer.group_add)(
