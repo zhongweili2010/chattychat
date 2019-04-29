@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+    <meta charset='UTF-8'>
+    <link rel='stylesheet' href='https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css' integrity='sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T' crossorigin='anonymous'>
+    <style>
+        *{
+            border:1px solid pink;
+            margin:0px;
+            padding: 0px;
+        }
+    </style>
+
+</head>
+
+ 
+<body>
+    <h1>hello {{this_user.username}}</h1>
+    <h1>lobby chat</h1>
+    <textarea class="chat-log-lobby" disabled="yes"></textarea><br>
+    <input class="chat-message-input" type="text">
+    <button class="group-message-submit" value=1>send</button>
+
+
+                {%for i in all_friends %}
+                
+                        <h1> to friend {{ i.username}}</h1>
+                        <h2>status {%if i.client_of%}online{%else%}offline{%endif%} </h2>
+                        <textarea class="chat-log{{i.id}}" disabled="yes"></textarea>
+                        <br>
+                        <input class="chat-message-input" type="text">
+                        
+                        <button class="chat-message-submit" value="{{i.id}}">send</button>
+
+                {%endfor%}
+    
+
+</body>
+
+<!-- //// pass personal text type in from html to retreieve from consumer  -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+<script type="text/javascript">
+
+var this_user = '{{ this_user.username}}';
+var chatSocket = new WebSocket(
+        'ws://' + window.location.host +
+        '/ws/chat/' + this_user+ '/');
+    console.log(chatSocket);
+// check if ENTER is pressed in the input 
+    $('.chat-message-input').keyup(function(e) {
+        if (e.keyCode === 13) {  // enter, return
+            this.nextElementSibling.click();
+        }
+    });
+
+// direct messages----send input field message out to backend channels
+    $('.chat-message-submit').click(function(){
+        var messageInputDom = this.previousElementSibling;
+        var chatlog=messageInputDom.previousElementSibling;
+        console.log('message sent');
+        var user_id = this.value;
+        var message = messageInputDom.value;
+        chatlog.value += (message + '\n');
+
+        chatSocket.send(JSON.stringify({
+            'message': message,
+            'type':'direct_message',
+            'receiver': user_id,
+        }));
+        
+        messageInputDom.value = '';
+    })
+//group messages----send input field message out to backend channels
+    $('.group-message-submit').click(function(){
+        console.log('message sent');
+        var messageInputDom = this.previousElementSibling;
+        var chatlog=messageInputDom.previousElementSibling;
+        var group_id=this.value;
+        var message = messageInputDom.value;
+        chatlog.vallue+=(message+'\n');
+        chatSocket.send(JSON.stringify({
+            'message': message,
+            'type': 'group_message',
+            'receiver': group_id,
+        }))
+        messageInputDom.value = '';
+        
+    })
+
+
+    //receving messages from backend channels
+    chatSocket.onmessage = function(e) {
+        
+        var data = JSON.parse(e.data);
+        var message = data['message'];
+        //direct messages
+        if( 'sender_id' in data){
+            var string = ".chat-log"+data['sender_id'];
+            console.log(string);
+            console.log(data);
+            document.querySelector(string).value += (message + '\n');
+        }
+        //group messages
+        else if('group_id' in data){
+            document.querySelector(".chat-log-lobby" ).value +=(message + '\n');
+        }
+    };
+
+    
+
+    //ws close
+    chatSocket.onclose = function(e) {
+        console.error('Chat socket closed unexpectedly');
+    };
+</script>
+</html>

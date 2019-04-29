@@ -6,7 +6,7 @@ from django.contrib.auth import login as lg,logout,authenticate
 from django.contrib.auth.decorators import login_required
 import re
 from rest_framework import viewsets
-
+from ..chat_app.models import ChatGroup
 from .serializers import UserSerializer
 
 def login_page(request):
@@ -21,13 +21,20 @@ def register(request):
                 messages.info(request,value,extra_tags=key)
             return redirect( reverse('login_page'))
         else:
-            User.objects.create_user(
+            new_user=User.objects.create_user(
                 first_name=request.POST['first_name'],
                 last_name=request.POST['last_name'],
                 email=request.POST['email'],
                 username=request.POST['email'],
                 password=request.POST['password'],
             )
+            # try:
+            lobby_group=ChatGroup.objects.get(id=1)
+            new_user.groups_of.add(lobby_group)
+            print('add to lobby success')
+                # except:
+            #     lobby_group=ChatGroup.objects.create(users=new_user)
+
 
             return redirect( reverse('login_page'))
     else:
