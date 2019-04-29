@@ -5,13 +5,16 @@
     <meta charset="UTF-8">  
     <title>Enter your chatroom!</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <link rel="stylesheet" href="{% static 'chat_app/css/style.css' %}">  
+    <!-- <link rel="stylesheet" href="{% static 'chat_app/css/style.css' %}">   -->
+    <style>
+    table, tr, th, td {
+        border: 1px solid black;
+    }
+    </style>
 </head>
-
 <body>
-
     <div class="container" id="index_page">
-        <div id="index_top">
+        <!-- <div id="index_top">
             <p>Rotten Banana</p>
         </div>
         
@@ -26,7 +29,7 @@
             <p>Update status</p>
             <p>Age</p>
             <p>Gender</p>
-        </div>
+        </div> -->
 
         <div class="row" id="index_middle">
             <div class="col" id="index_left">
@@ -36,8 +39,46 @@
             </div>
 
             <div class="col" id="index_right">
-                <h5 class="index_text">Your Friends</h5>
-                <table class="table table-striped">
+                <h5 class="index_text">All Users</h5>
+                <table>
+                    <tr>
+                        <th>First Name</th>
+                        <th>Last Name</th>
+                        <th>Email</th>
+                        <th>Action</th>
+                    </tr>
+                    {% for user in all_users %}
+                    <tr>
+                        <td>{{user.first_name}}</td>
+                        <td>{{user.last_name}}</td>
+                        <td>{{user.email}}</td>
+                        <td><form action="/chat/add_friend/" method="POST">
+                            {% csrf_token %}
+                        <input type="hidden" value="{{user.id}}" name="add_friend">
+                        <input type="submit" value="Add Friend">
+                        </form>
+                    </tr>
+                    {% endfor %}
+                </table>
+                <h5 class="index_text">My Friends</h5>
+                <table>
+                    <tr>
+                        <th>First Name</th>
+                        <th>Last Name</th>
+                        <th>Email</th>
+                        <th>Status</th>
+                    </tr>
+                    {% for friend in all_friends %}
+                    <tr>
+                        <td>{{friend.first_name}}</td>
+                        <td>{{friend.last_name}}</td>
+                        <td>{{friend.email}}</td>
+                        <td>{{friend.status}}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+                
+                <!-- <table class="table table-striped">
                     <thead>
                         <tr>
                         <th scope="col">#</th>
@@ -72,9 +113,7 @@
                             <td>@twitter</td>
                         </tr>
                     </tbody>
-                </table>
-
-
+                </table> -->
             </div>
         </div>
 
@@ -85,11 +124,17 @@
             </div>
         </div>
 
+        <textarea id="chat-log" cols="100" rows="12"></textarea><br/>
+        <span>{{this_user_json}} </span><input id="chat-message-input" type="text" size="65"/>
+        <input id="chat-message-submit" type="button" value="Send"/><br>
+        <a href="/logout">Logout</a>
+
     </div>
 
 
-
+    
 <script>
+    // Dashboard Script SL
     document.querySelector('#room-name-input').focus();
     document.querySelector('#room-name-input').onkeyup = function(e) {
         if (e.keyCode === 13) {  // enter, return
@@ -109,6 +154,55 @@
             x.style.display = "none";
         };
         
+    };
+        // Chatroom Script SL
+    function menuFunction() {
+        var x = document.getElementById("mayne");
+        if (x.style.display === "none") {
+        x.style.display = "block";
+        } else {
+        x.style.display = "none";
+        }
+    };
+
+    var thisUser = {{ this_user_json }};
+
+    var chatSocket = new WebSocket(
+        'ws://' + window.location.host +
+        '/ws/chat/lobby/');
+    console.log(chatSocket);
+
+    chatSocket.onmessage = function(e) {
+        
+        var data = JSON.parse(e.data);
+        var message = data['message'];
+        console.log(data);
+        document.querySelector('#chat-log').value += (message + '\n');
+        // document.querySelector('#chat-log').innerHTML += "<div class='each_chat'>" + message + "</div>";
+    };
+
+    // warning... Ian edited the above
+
+
+    chatSocket.onclose = function(e) {
+        console.error('Chat socket closed unexpectedly');
+    };
+
+    document.querySelector('#chat-message-input').focus();
+    document.querySelector('#chat-message-input').onkeyup = function(e) {
+        if (e.keyCode === 13) {  // enter, return
+            document.querySelector('#chat-message-submit').click();
+        }
+    };
+
+    document.querySelector('#chat-message-submit').onclick = function(e) {
+        var messageInputDom = document.querySelector('#chat-message-input');
+        var message = '' + thisUser + ': ' + messageInputDom.value;
+        chatSocket.send(JSON.stringify({
+            'message': message
+        }));
+
+        messageInputDom.value = '';
     };
 </script>
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>

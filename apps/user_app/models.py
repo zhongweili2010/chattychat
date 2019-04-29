@@ -76,6 +76,8 @@ class User(AbstractUser):
     
     nick_name=models.CharField(max_length=25,null=True)
     public=models.BooleanField(default=True)
-    friends=models.ManyToManyField("self",related_name="friends_of")
+
+    status = models.CharField(max_length=25)
+    # friends=models.ManyToManyField("self",related_name="friends_of")
 # Create your models here.
 
