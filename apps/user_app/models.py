@@ -64,7 +64,7 @@ class UserManager(AbstractUserManager):
     #             return error
 
 class User(AbstractUser):
-    friends=models.ManyToManyField("self",related_name="friends_of")
+    
     # interest=models.CharField(max_length=25) 
     created_at=models.DateTimeField(auto_now_add=True)
     updated_at=models.DateTimeField(auto_now=True)
@@ -78,6 +78,6 @@ class User(AbstractUser):
     public=models.BooleanField(default=True)
 
     status = models.CharField(max_length=25)
-    # friends=models.ManyToManyField("self",related_name="friends_of")
+    friends=models.ManyToManyField("self",related_name="friends_of")
 # Create your models here.
 
