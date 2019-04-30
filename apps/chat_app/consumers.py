@@ -11,6 +11,7 @@ from channels.layers import get_channel_layer
 class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         self.user = self.scope['user']
+        #see if there is zombie client did not disconect, if there is   disconnect
         if Client.objects.filter(user=self.user).count()>0:
             Client.objects.get(user=self.user).delete()
         this_channel=Client.objects.create(channel_name=self.channel_name,user=self.user)
@@ -29,38 +30,20 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 )
                 print(self.group_list)
 
-            
-        
-        
-
-        # self.user_name = self.scope['url_route']['kwargs']['user_name']
-        # # self.room_name=self.scope['url_route']['kwargs']['room_name']
         print(f"user {self.channel_name} connected")
-        # if self.user_name!=self.user.username:
-        #     print('not same user')
-        
-        # self.room_group_name = 'chat_%s' % self.room_name  
 
-        # Join room group
-        # async_to_sync(self.channel_layer.group_add)(
-        #     self.room_group_name,
-        #     self.channel_name
-        # )
         await self.accept()
 
     async def disconnect(self, close_code):   
         Client.objects.get(user=self.user).delete()
-        # # Leave room group
-        # async_to_sync(self.channel_layer.group_discard)(
-        #     self.room_group_name,
-        #     self.channel_name
-        # )
+        
 
     # Receive message from WebSocket
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
         message = text_data_json['message']
         message = f"{self.user.username} said : "+message
+
         #send one to one to channel layer
         if text_data_json['type']=='direct_message':
             user_id=text_data_json['receiver']
@@ -77,7 +60,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 await self.channel_layer.send(self.channel_name,{
                     "type":'chat.message',
                     "message": "user cannot be reached at this moment",
-                    "sender_id":receiver,
+                    "sender_id":user_id,
                 })
 
 
@@ -92,7 +75,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     "group":text_data_json['receiver'],
                     
                 })
-
 
     #Receive from channel layer
     async def chat_message(self, event):
@@ -114,8 +96,4 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 'message': message,
                 'group_id':group_id,
             }))  
-            print(message)
-
-            # 'room_id': room_id,
-            # 'channel_name':self.channel_name,
-      
+            

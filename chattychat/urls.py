@@ -6,12 +6,8 @@ from apps.user_app.models import User
 from apps.chat_app.models import Message
 from apps.user_app.views import UserViewSet
 
-
-
 router=routers.DefaultRouter()
 router.register(r'user',UserViewSet)
-
-        
 
 urlpatterns = [
     path('admin/', admin.site.urls),

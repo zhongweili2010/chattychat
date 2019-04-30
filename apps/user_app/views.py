@@ -28,12 +28,15 @@ def register(request):
                 username=request.POST['email'],
                 password=request.POST['password'],
             )
-            # try:
-            lobby_group=ChatGroup.objects.get(id=1)
-            new_user.groups_of.add(lobby_group)
-            print('add to lobby success')
-                # except:
-            #     lobby_group=ChatGroup.objects.create(users=new_user)
+            # see if there is lobby group   if not create one
+            if ChatGroup.objects.filter(name="lobby").count()>0:
+
+                lobby_group=ChatGroup.objects.filter(name="lobby").first()
+                new_user.groups_of.add(lobby_group)
+                print('add to lobby success')
+            else:
+                ChatGroup.objects.create(name="lobby",users=new_user)
+
 
 
             return redirect( reverse('login_page'))

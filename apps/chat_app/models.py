@@ -14,6 +14,7 @@ class Client(models.Model):
     user=models.OneToOneField(User,on_delete=models.CASCADE,related_name='client_of')
 
 class ChatGroup(models.Model):
+    name=models.CharField(max_length=30,null=True)
     users=models.ManyToManyField(User,related_name="groups_of")
     created_at=models.DateTimeField(auto_now_add=True)
     updated_at=models.DateTimeField(auto_now=True)
