@@ -1,9 +1,0 @@
-.8 sync to async
-
-1.logout on browser exit
-
-1.1 friend search bar with ajax
-
-2.add friend button
-
-3.friend log on signals
