@@ -1,0 +1,264 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">  
+    <title>Enter your chatroom!</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <!-- <link rel="stylesheet" href="{% static 'chat_app/css/style.css' %}">   -->
+    <style>
+    table, tr, th, td {
+        border: 1px solid black;
+    }
+    </style>
+</head>
+<body>
+    <div class="container" id="index_page">
+        <h1>hello {{this_user.username}}</h1>
+
+        <div class="row" id="index_middle">
+            <div class="col" id="index_left">
+                <h5 class="index_text">What chat room would you like to enter?</h5>
+                <form action="/chat/add_group/" method="POST">
+                    {%csrf_token%}
+                <input id="room-name-input" name="room_name" type="text" size="16" placeholder="Example: 123"/><br/>
+                <input id="room-name-submit" class="btn btn-primary btn-lg" type="button" value="Enter"/>
+            </form>
+            </div>
+
+            <div class="col" id="index_right">
+                <h5 class="index_text">Connect with users</h5>
+                <table>
+                    <tr>
+                        <th>First Name</th>
+                        <th>Last Name</th>
+                        <th>Email</th>
+                        <th>Action</th>
+                    </tr>
+                    {% for user in all_nonfriends %}
+                    <tr>
+                        <td>{{user.first_name}}</td>
+                        <td>{{user.last_name}}</td>
+                        <td>{{user.email}}</td>
+                        <td><form action="/chat/add_friend/" method="POST">
+                            {% csrf_token %}
+                        <input type="hidden" value="{{user.id}}" name="add_friend">
+                        <input type="submit" value="Add Friend">
+                        </form>
+                    </tr>
+                    {% endfor %}
+                </table>
+                <h5 class="index_text">My Friends</h5>
+
+            </table>
+                    {% for i in all_friends %}
+                    
+                    
+                    <h5> to friend {{ i.username}}</h5>
+                    <a href="/chat/unfriend/{{i.id}}">unfriend</a><br>
+
+                    <textarea class="chat-log{{i.id}}" disabled="yes"></textarea>
+                    <br>
+                    <h6>status {%if i.client_of%}online{%else%}offline{%endif%} </h6>
+                    <input class="chat-message-input" type="text">
+                    
+                    <button class="chat-message-submit" value="{{i.id}}">send</button>
+
+
+
+                    {% endfor %}
+                
+                
+            </div>
+        </div>
+
+
+
+
+       
+    <h3>lobby chat</h3>
+    <textarea class="chat-log-lobby" disabled="yes"></textarea><br>
+    <input class="chat-message-input" type="text">
+    <button class="group-message-submit" value="lobby">send</button>
+
+
+
+    {% for j in all_groups %}
+    <h4>chatgroup of {{j.name}}</h4><a href="/chat/leave_group/{{j.id}}/">leave room</a><br>
+    <textarea class="group-chat-log{{j.id}}" disabled="yes"></textarea>
+    <br>
+    <input class="chat-message-input" type="text">
+    
+    <button class="group-message-submit" value="{{j.id}}">send</button>
+
+
+    {%endfor%}
+
+
+
+
+
+        <a href="/login/logout">Logout</a>
+
+    </div>
+
+
+</body>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+<script>
+
+var this_user = '{{ this_user.username}}';
+var chatSocket = new WebSocket(
+        'ws://' + window.location.host +
+        '/ws/chat/' + this_user+ '/');
+    console.log(chatSocket);
+// check if ENTER is pressed in the input 
+    $('.chat-message-input').keyup(function(e) {
+        if (e.keyCode === 13) {  // enter, return
+            this.nextElementSibling.click();
+        }
+    });
+
+// direct messages----send input field message out to backend channels
+    $('.chat-message-submit').click(function(){
+        var messageInputDom = this.previousElementSibling;
+        var chatlog=messageInputDom.previousElementSibling;
+        console.log('message sent');
+        var user_id = this.value;
+        var message = messageInputDom.value;
+        chatlog.value += (message + '\n');
+
+        chatSocket.send(JSON.stringify({
+            'message': message,
+            'type':'direct_message',
+            'receiver': user_id,
+        }));
+        
+        messageInputDom.value = '';
+    })
+//group messages----send input field message out to backend channels
+    $('.group-message-submit').click(function(){
+        console.log('message sent');
+        var messageInputDom = this.previousElementSibling;
+        var chatlog=messageInputDom.previousElementSibling;
+        var group_id=this.value;
+        var message = messageInputDom.value;
+        chatlog.vallue+=(message+'\n');
+        chatSocket.send(JSON.stringify({
+            'message': message,
+            'type': 'group_message',
+            'receiver': group_id,
+        }))
+        messageInputDom.value = '';
+        
+    })
+
+    //receving messages from backend channels
+    chatSocket.onmessage = function(e) {
+        
+        var data = JSON.parse(e.data);
+        var message = data['message'];
+        //direct messages
+        if( 'sender_id' in data){
+            var string = ".chat-log"+data['sender_id'];
+            console.log(string);
+            console.log(data);
+            document.querySelector(string).value += (message + '\n');
+        }
+        //group messages
+        else if('group_id' in data){
+            if(data['group_id']=='lobby'){
+                selectorstring=".chat-log-lobby";
+            }
+            else{
+                selectorstring=".group-chat-log"+data['group_id'];
+            }
+
+            document.querySelector(selectorstring ).value +=(message + '\n');
+        }
+    };
+  
+
+    //ws close
+    chatSocket.onclose = function(e) {
+        console.error('Chat socket closed unexpectedly');
+    };
+
+
+
+    // // Dashboard Script SL
+    // document.querySelector('#room-name-input').focus();
+    // document.querySelector('#room-name-input').onkeyup = function(e) {
+    //     if (e.keyCode === 13) {  // enter, return
+    //         document.querySelector('#room-name-submit').click();
+    //     }
+    // };
+
+    // document.querySelector('#room-name-submit').onclick = function(e) {
+    //     var roomName = document.querySelector('#room-name-input').value;
+    //     window.location.pathname = '/chat/' + roomName + '/';
+    // };
+    // function myFunction() {
+    //     var x = document.getElementById("index_profile");
+    //     if (x.style.display === "none") {
+    //         x.style.display = "block";
+    //     } else {
+    //         x.style.display = "none";
+    //     };
+        
+    // };
+    //     // Chatroom Script SL
+    // function menuFunction() {
+    //     var x = document.getElementById("mayne");
+    //     if (x.style.display === "none") {
+    //     x.style.display = "block";
+    //     } else {
+    //     x.style.display = "none";
+    //     }
+    // };
+
+    // var thisUser = {{ this_user_json }};
+
+    // var chatSocket = new WebSocket(
+    //     'ws://' + window.location.host +
+    //     '/ws/chat/lobby/');
+    // console.log(chatSocket);
+
+    // chatSocket.onmessage = function(e) {
+        
+    //     var data = JSON.parse(e.data);
+    //     var message = data['message'];
+    //     console.log(data);
+    //     document.querySelector('#chat-log').value += (message + '\n');
+    //     // document.querySelector('#chat-log').innerHTML += "<div class='each_chat'>" + message + "</div>";
+    // };
+
+    // // warning... Ian edited the above
+
+
+    // chatSocket.onclose = function(e) {
+    //     console.error('Chat socket closed unexpectedly');
+    // };
+
+    // document.querySelector('#chat-message-input').focus();
+    // document.querySelector('#chat-message-input').onkeyup = function(e) {
+    //     if (e.keyCode === 13) {  // enter, return
+    //         document.querySelector('#chat-message-submit').click();
+    //     }
+    // };
+
+    // document.querySelector('#chat-message-submit').onclick = function(e) {
+    //     var messageInputDom = document.querySelector('#chat-message-input');
+    //     var message = '' + thisUser + ': ' + messageInputDom.value;
+    //     chatSocket.send(JSON.stringify({
+    //         'message': message
+    //     }));
+
+    //     messageInputDom.value = '';
+    // };
+</script>
+
+
+</html>
