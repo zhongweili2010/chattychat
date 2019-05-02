@@ -23,7 +23,7 @@
                 <table id="main_left_menu">
                     <tr>
                         <td>
-                            <div class="md-form mt-0">
+                            <div class="md-form mt-0 searchbar">
                                 <input class="form-control" type="text" placeholder="Search for friend" aria-label="Search">
                             </div>
                         </td>
@@ -47,7 +47,7 @@
             </div>
         </div>
 
-        <div class="main_right container">
+        <div class="main_right">
             <h2>Welcome, Alex!</h2>
 
             <div class="main_right_rooms_p">
@@ -63,19 +63,7 @@
                 </div>
             </div>
         
-            <div class="main_right_rooms_p">
-                <p class="room_num">You are currently in room: 333</p>
-                <div class="main_right_rooms">
-                    <textarea class="chat_boxes" disabled="yes"></textarea>
-                    <div class="input-group mb-3">
-                        <input type="text" class="form-control" placeholder="Send a msg..." aria-label="Recipient's username">
-                        <div class="input-group-append">
-                            <button class="input-group-text send_button">Send</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
+        
             <div class="main_right_rooms_p">
                 <p class="room_num">You are currently in room: 122</p>
                 <div class="main_right_rooms">
@@ -89,20 +77,19 @@
                 </div>
             </div>
 
-            <div class="main_right_rooms_p">
-                <p class="room_num">You are currently in room: 901</p>
-                <div class="main_right_rooms">
-                    <textarea class="chat_boxes" disabled="yes"></textarea>
-                    <div class="input-group mb-3">
-                        <input type="text" class="form-control" placeholder="Send a msg..." aria-label="Recipient's username">
-                        <div class="input-group-append">
-                            <button class="input-group-text send_button">Send</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+
+
+
+            
         </div>
 
+
+
+
+
+
+
+        
         <div class="pop_window pop_profile">
             <div class="pop_container">
                 <div class="pop_container_pic">
@@ -122,12 +109,22 @@
             </div>
         </div>
 
+
+
         <div class="pop_window pop_room">
             <div class="pop_container">
-                <p>Enter the room#</p>
-                <p>123123123131313qwfqwfqwfqwfqwfqwfqfwqwfqwfwq2</p>
+                <p>Entere room number here</p>
+                <div class="input-group mb-3" id="enter_room">
+                    <input type="text" class="form-control" placeholder="Enter room number" aria-label="Recipient's username" aria-describedby="basic-addon2">
+                    <div class="input-group-append">
+                      <span class="input-group-text" id="basic-addon2">Enter</span>
+                    </div>
+                </div>
+                
             </div>
         </div>
+
+
 
         <div class="pop_window pop_friends">
             <div class="pop_container">
@@ -146,8 +143,10 @@
     })
 
     // when hovering over the rooms, it changes colors
+
+
     $(".room_num").mouseover(function(){
-        $(this).css("background-color", "aliceblue");
+        $(this).css("background-color", "skyblue");
     })
 
     $(".room_num").mouseout(function(){
@@ -185,13 +184,3 @@
 
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
