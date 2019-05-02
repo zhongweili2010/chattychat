@@ -50,9 +50,22 @@ def logout(request):
 #     # print(this_user.first)
 #     print(f"your friend {this_user.first_name}is logged on")
 
-
-
-
-
-# Create your views here.
+# @login_required(login_url='/login')
+# def enter_room(request):
+#     if request.method=="POST":
+#         room_name=request.POST['room_name']
+#         if ChatGroup.objects.filter(name=room_name).count()>0:
+#             this_group=ChatGroup.objects.filter(name=room_name).first()
+#         else:
+#             this_group=ChatGroup.objects.create(name=room_name)
+#         this_group.users.add(request.user)
+#         return redirect('/chat/')
+#     else:
+#         return HttpResponse('bad post')
+    
+# @login_required(login_url='/login')
+# def leave_group(request,room_id):
+#     this_group=ChatGroup.objects.get(id=room_id)
+#     this_group.users.remove(request.user)
+#     return redirect('/chat')
 

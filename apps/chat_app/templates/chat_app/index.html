@@ -1,19 +1,25 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">  
+    <meta charset="UTF-8">
     <title>Chat App</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js" integrity="sha384-xrRywqdh3PHs8keKZN+8zzc5TX0GRTLCcmivcbNJWm2rs5C8PRhcEn3czEjhAO9o" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js"
+        integrity="sha384-xrRywqdh3PHs8keKZN+8zzc5TX0GRTLCcmivcbNJWm2rs5C8PRhcEn3czEjhAO9o"
+        crossorigin="anonymous"></script>
 
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
 
     <link rel="stylesheet" type="text/css" href="{% static 'chat_app/css/style.css' %}">
-    
+
 </head>
 
 <body>
@@ -23,8 +29,11 @@
                 <table id="main_left_menu">
                     <tr>
                         <td>
-                            <div class="md-form mt-0">
-                                <input class="form-control search-friend" type="text" placeholder="Search for friend" aria-label="Search">
+
+                            <div class="md-form mt-0 searchbar">
+                                <input class="form-control" type="text" placeholder="Search for friend"
+                                    aria-label="Search">
+
                             </div>
                         </td>
                         <td id="friend-space" class="hidden">
@@ -47,10 +56,11 @@
                         <td><a href="/logout">Logout</a>
                             </td>
                     </tr>
-                    
+
                 </table>
             </div>
         </div>
+
 
         <div class="main_right container">
             <h2>Welcome, {{request.user}}!</h2>
@@ -69,58 +79,59 @@
                     </div>
                 </div>
 
-            <div class="main_right_rooms_p">
+
+            <!-- <div class="main_right_rooms_p">
                 <p class="room_num">You are currently in room: 123</p>
                 <div class="main_right_rooms">
                     <textarea class="chat_boxes" disabled="yes"></textarea>
                     <div class="input-group mb-3">
-                        <input type="text" class="form-control" placeholder="Send a msg..." aria-label="Recipient's username">
+                        <input type="text" class="form-control" placeholder="Send a msg..."
+                            aria-label="Recipient's username">
                         <div class="input-group-append">
                             <button class="input-group-text send_button">Send</button>
                         </div>
                     </div>
                 </div>
-            </div>
-        
+            </div> -->
+
+
+
+            {%for group in all_groups%}
             <div class="main_right_rooms_p">
-                <p class="room_num">You are currently in room: 333</p>
+                <p class="room_num">Chatgroup: {{group.name}}           <a href="/chat/leave_group/{{group.id}}/">leave room</a></p>
+                <br>
+
                 <div class="main_right_rooms">
-                    <textarea class="chat_boxes" disabled="yes"></textarea>
-                    <div class="input-group mb-3">
-                        <input type="text" class="form-control" placeholder="Send a msg..." aria-label="Recipient's username">
-                        <div class="input-group-append">
-                            <button class="input-group-text send_button">Send</button>
-                        </div>
-                    </div>
+
+                    <textarea class="chat_boxes group-chat-log{{group.id}}" disabled="yes"></textarea>
+                    <!-- <div class="input-group mb-3"> -->
+                        <input type="text" class="form-control chat-message-input" placeholder="Send a msg..."
+                            aria-label="Recipient's username">
+
+                        <button class="input-group-text send_button group-message-submit" value="{{group.id}}">Send</button>
+
+                    <!-- </div> -->
                 </div>
             </div>
 
-            <div class="main_right_rooms_p">
-                <p class="room_num">You are currently in room: 122</p>
-                <div class="main_right_rooms">
-                    <textarea class="chat_boxes" disabled="yes"></textarea>
-                    <div class="input-group mb-3">
-                        <input type="text" class="form-control" placeholder="Send a msg..." aria-label="Recipient's username">
-                        <div class="input-group-append">
-                            <button class="input-group-text send_button">Send</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
 
-            <div class="main_right_rooms_p">
-                <p class="room_num">You are currently in room: 901</p>
-                <div class="main_right_rooms">
-                    <textarea class="chat_boxes" disabled="yes"></textarea>
-                    <div class="input-group mb-3">
-                        <input type="text" class="form-control" placeholder="Send a msg..." aria-label="Recipient's username">
-                        <div class="input-group-append">
-                            <button class="input-group-text send_button">Send</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            {%endfor%}
+
+
+
+
+
+
+
+
         </div>
+
+
+
+
+
+
+
 
         <div class="pop_window pop_profile">
             <div class="pop_container">
@@ -131,7 +142,8 @@
                 <div class="input-group mb-3">
                     <div class="custom-file">
                         <input type="file" class="custom-file-input" id="inputGroupFile02">
-                        <label class="custom-file-label" for="inputGroupFile02" aria-describedby="inputGroupFileAddon02">Choose file</label>
+                        <label class="custom-file-label" for="inputGroupFile02"
+                            aria-describedby="inputGroupFileAddon02">Choose file</label>
                     </div>
                     <div class="input-group-append">
                         <span class="input-group-text" id="inputGroupFileAddon02">Upload</span>
@@ -141,12 +153,24 @@
             </div>
         </div>
 
+
+
         <div class="pop_window pop_room">
             <div class="pop_container">
-                <p>Enter the room#</p>
-                <p>123123123131313qwfqwfqwfqwfqwfqwfqfwqwfqwfwq2</p>
+                <p>Enter room number here</p>
+                <form action ="/chat/add_group/" method="POST" class="input-group mb-3" id="enter_room">
+                    {%csrf_token%}
+                    <input type="text" class="form-control" placeholder="Enter room number" name="room_name"
+                        aria-label="Recipient's username" aria-describedby="basic-addon2">
+                    <!-- <div class="input-group-append"> -->
+                        <button type="submit" class="input-group-text" id="basic-addon2">Enter</button>
+                    <!-- </div> -->
+                    </form>
+
             </div>
         </div>
+
+
 
         <div class="pop_window pop_friends">
             <div class="pop_container">
@@ -185,6 +209,7 @@
         </div>
 
     </div>
+
 
 <script>
 
@@ -326,21 +351,52 @@
         for (var i=0; i < pop_up_window.length; i++) {
         if (event.target == pop_up_window[i]) {
             pop_up_window[i].style.display = "none"
+                                               
+         // Function to show/hide the chatrooms. If you click on the <p> part of the div w/ class called main_right_rooms_p, it will toggle the sibling <div>
+        $(".room_num").click(function () {
+            $(this).siblings("div").toggle();
+        })
+
+        // when hovering over the rooms, it changes colors
+
+
+        $(".room_num").mouseover(function () {
+            $(this).css("background-color", "skyblue");
+        })
+
+        $(".room_num").mouseout(function () {
+            $(this).css("background-color", "white");
+        })
+
+
+        // Below is for the "Profile" option
+        $("#profile").click(function () {
+            document.querySelector(".pop_profile").style.display = "inline"
+        })
+
+        // Below is for the "new chatroom" option
+        $("#new_room").click(function () {
+            document.querySelector(".pop_room").style.display = "inline"
+        })
+
+        // Below is for the "Your friends" option
+        $("#friends").click(function () {
+            document.querySelector(".pop_friends").style.display = "inline"
+        })
+
+        // This allows when the pop up window comes up, if you click anywhere outside, the pop up window is gone.
+        var pop_up_window = document.querySelectorAll(".pop_window");
+
+        window.onclick = function (event) {
+            for (var i = 0; i < pop_up_window.length; i++) {
+                if (event.target == pop_up_window[i]) {
+                    pop_up_window[i].style.display = "none"
+                }
             }
         }
-    }
-
-</script>
+                                               
+                     </script>
 
 </body>
+
 </html>
-
-
-
-
-
-
-
-
-
-

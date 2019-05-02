@@ -1,0 +1,551 @@
+
+<!DOCTYPE html>
+<meta charset="utf-8">
+<head>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+
+</head>
+<title>Web Speech API Demo</title>
+<style>
+
+  * {
+    font-family: Verdana, Arial, sans-serif;
+  }
+  body{
+      padding-top: 100px;
+      background-color: black;
+      
+  }
+  a:link {
+    color:#000;
+    text-decoration: none;
+  }
+  a:visited {
+    color:#000;
+  }
+  a:hover {
+    color:#33F;
+  }
+  .button {
+    background: -webkit-linear-gradient(top,#008dfd 0,#0370ea 100%);
+    border: 1px solid #076bd2;
+    border-radius: 3px;
+    color: #fff;
+    display: none;
+    font-size: 13px;
+    font-weight: bold;
+    line-height: 1.3;
+    padding: 8px 25px;
+    text-align: center;
+    text-shadow: 1px 1px 1px #076bd2;
+    letter-spacing: normal;
+  }
+  .center {
+    padding: 10px;
+    text-align: center;
+  }
+  .final {
+    color: black;
+    padding-right: 3px; 
+  }
+  .interim {
+    color: gray;
+  }
+  .info {
+    font-size: 14px;
+    text-align: center;
+    color: #777;
+    display: none;
+  }
+  .right {
+    /* float: right;    */
+    margin-top: 50px;
+    display: inline-block;
+    vertical-align: top;
+  }
+  .sidebyside {
+    display: inline-block;
+    width: 45%;
+    min-height: 40px;
+    text-align: left;
+    vertical-align: top;
+  }
+  #headline {
+    font-size: 40px;
+    font-weight: 300;
+  }
+  #info {
+    font-size: 20px;
+    text-align: center;
+    color: #777;
+    visibility: hidden;
+  }
+  #results {
+    font-size: 14px;
+    font-weight: bold;
+    border: 1px solid #ddd;
+    padding: 15px;
+    margin-left:370px;
+    margin-top: 50px;
+    text-align: left;
+    min-height: 20px;
+    width: 500px;
+    color: #ddd;
+    display: inline-block;
+    vertical-align: top;
+  }
+  #start_button {
+    border: 0;
+    background-color:transparent;
+    padding: 0;
+  }
+</style>
+<!--h1 class="center" id="headline">
+  <a href="http://dvcs.w3.org/hg/speech-api/raw-file/tip/speechapi.html">
+    Web Speech API</a> Demonstration</h1-->
+<body>
+<div id="info">
+  <p id="info_start">Click on the microphone icon and begin speaking.</p>
+  <p id="info_speak_now">Speak now.</p>
+  <p id="info_no_speech">No speech was detected. You may need to adjust your
+    <a href="//support.google.com/chrome/bin/answer.py?hl=en&amp;answer=1407892">
+      microphone settings</a>.</p>
+  <p id="info_no_microphone" style="display:none">
+    No microphone was found. Ensure that a microphone is installed and that
+    <a href="//support.google.com/chrome/bin/answer.py?hl=en&amp;answer=1407892">
+    microphone settings</a> are configured correctly.</p>
+  <p id="info_allow">Click the "Allow" button above to enable your microphone.</p>
+  <p id="info_denied">Permission to use microphone was denied.</p>
+  <p id="info_blocked">Permission to use microphone is blocked. To change,
+    go to chrome://settings/contentExceptions#media-stream</p>
+  <p id="info_upgrade">Web Speech API is not supported by this browser.
+     Upgrade to <a href="//www.google.com/chrome">Chrome</a>
+     version 25 or later.</p>
+</div>
+<!-- <div class="right">
+  <button id="start_button" onclick="startButton(event)">
+    <img id="start_img" src="static/mic.gif" alt="Start"></button>
+</div> -->
+<div id="results">
+  <span id="final_span" class="final"></span>
+
+
+  
+  <span id="interim_span" class="interim"></span>
+</div>
+<div class="right">
+        <button id="start_button" onclick="startButton(event)">
+          <img id="start_img" src="static/mic.gif" alt="Start"></button>
+      </div>
+<div class="center">
+  <div class="sidebyside" style="text-align:right; ">
+    <button id="copy_button" class="button" onclick="copyButton()">
+      Copy and Paste</button>
+    <div id="copy_info" class="info">
+      Press Control-C to copy text.<br>(Command-C on Mac.)
+    </div>
+  </div> 
+  <div class="sidebyside">
+    <button id="email_button" class="button" onclick="emailButton()">
+      Create Email</button>
+    <div id="email_info" class="info">
+      Text sent to default email application.<br>
+      (See chrome://settings/handlers to change.)
+    </div>
+  </div>
+  <p>
+  <div id="div_language">
+    <select id="select_language" onchange="updateCountry()" style="display: none"></select>
+    &nbsp;&nbsp;
+    <select id="select_dialect"  style="display: none"></select>
+  </div>
+</div>
+</body>
+<!-- <canvas id="myCanvas" width="800" height="500"></canvas> -->
+<script> 
+var langs =
+[['Afrikaans',       ['af-ZA']],
+ ['Bahasa Indonesia',['id-ID']],
+ ['Bahasa Melayu',   ['ms-MY']],
+ ['Català',          ['ca-ES']],
+ ['Čeština',         ['cs-CZ']],
+ ['Deutsch',         ['de-DE']],
+ ['English',         ['en-AU', 'Australia'],
+                     ['en-CA', 'Canada'],
+                     ['en-IN', 'India'],
+                     ['en-NZ', 'New Zealand'],
+                     ['en-ZA', 'South Africa'],
+                     ['en-GB', 'United Kingdom'],
+                     ['en-US', 'United States']],
+ ['Español',         ['es-AR', 'Argentina'],
+                     ['es-BO', 'Bolivia'],
+                     ['es-CL', 'Chile'],
+                     ['es-CO', 'Colombia'],
+                     ['es-CR', 'Costa Rica'],
+                     ['es-EC', 'Ecuador'],
+                     ['es-SV', 'El Salvador'],
+                     ['es-ES', 'España'],
+                     ['es-US', 'Estados Unidos'],
+                     ['es-GT', 'Guatemala'],
+                     ['es-HN', 'Honduras'],
+                     ['es-MX', 'México'],
+                     ['es-NI', 'Nicaragua'],
+                     ['es-PA', 'Panamá'],
+                     ['es-PY', 'Paraguay'],
+                     ['es-PE', 'Perú'],
+                     ['es-PR', 'Puerto Rico'],
+                     ['es-DO', 'República Dominicana'],
+                     ['es-UY', 'Uruguay'],
+                     ['es-VE', 'Venezuela']],
+ ['Euskara',         ['eu-ES']],
+ ['Français',        ['fr-FR']],
+ ['Galego',          ['gl-ES']],
+ ['Hrvatski',        ['hr_HR']],
+ ['IsiZulu',         ['zu-ZA']],
+ ['Íslenska',        ['is-IS']],
+ ['Italiano',        ['it-IT', 'Italia'],
+                     ['it-CH', 'Svizzera']],
+ ['Magyar',          ['hu-HU']],
+ ['Nederlands',      ['nl-NL']],
+ ['Norsk bokmål',    ['nb-NO']],
+ ['Polski',          ['pl-PL']],
+ ['Português',       ['pt-BR', 'Brasil'],
+                     ['pt-PT', 'Portugal']],
+ ['Română',          ['ro-RO']],
+ ['Slovenčina',      ['sk-SK']],
+ ['Suomi',           ['fi-FI']],
+ ['Svenska',         ['sv-SE']],
+ ['Türkçe',          ['tr-TR']],
+ ['български',       ['bg-BG']],
+ ['Pусский',         ['ru-RU']],
+ ['Српски',          ['sr-RS']],
+ ['한국어',            ['ko-KR']],
+ ['中文',             ['cmn-Hans-CN', '普通话 (中国大陆)'],
+                     ['cmn-Hans-HK', '普通话 (香港)'],
+                     ['cmn-Hant-TW', '中文 (台灣)'],
+                     ['yue-Hant-HK', '粵語 (香港)']],
+ ['日本語',           ['ja-JP']],
+ ['Lingua latīna',   ['la']]];
+for (var i = 0; i < langs.length; i++) {
+  select_language.options[i] = new Option(langs[i][0], i);
+}
+select_language.selectedIndex = 6;
+updateCountry();
+select_dialect.selectedIndex = 6;
+showInfo('info_start');
+function updateCountry() {
+  for (var i = select_dialect.options.length - 1; i >= 0; i--) {
+    select_dialect.remove(i);
+  }
+  var list = langs[select_language.selectedIndex];
+  for (var i = 1; i < list.length; i++) {
+    select_dialect.options.add(new Option(list[i][1], list[i][0]));
+  }
+  select_dialect.style.visibility = list[1].length == 1 ? 'hidden' : 'visible';
+}
+var create_email = false;
+var final_transcript = '';
+var recognizing = false;
+var ignore_onend;
+var start_timestamp;
+if (!('webkitSpeechRecognition' in window)) {
+  upgrade();
+} else {
+  start_button.style.display = 'inline-block';
+  var recognition = new webkitSpeechRecognition();
+  recognition.continuous = true;
+  recognition.interimResults = true;
+  recognition.onstart = function() {
+    recognizing = true;
+    showInfo('info_speak_now');
+    start_img.src = 'static/mic-animate.gif';
+  };
+  recognition.onerror = function(event) {
+    if (event.error == 'no-speech') {
+      start_img.src = 'static/mic.gif';
+      showInfo('info_no_speech');
+      ignore_onend = true;
+    }
+    if (event.error == 'audio-capture') {
+      start_img.src = 'static/mic.gif';
+      showInfo('info_no_microphone');
+      ignore_onend = true;
+    }
+    if (event.error == 'not-allowed') {
+      if (event.timeStamp - start_timestamp < 100) {
+        showInfo('info_blocked');
+      } else {
+        showInfo('info_denied');
+      }
+      ignore_onend = true;
+    }
+  };
+  recognition.onend = function() {
+    recognizing = false;
+    console.log();
+    if (ignore_onend) {
+      return;
+    }
+    start_img.src = 'static/mic.gif';
+    if (!final_transcript) {
+      showInfo('info_start');
+      return;
+    }
+    showInfo('');
+    if (window.getSelection) {
+      window.getSelection().removeAllRanges();
+      var range = document.createRange();
+      range.selectNode(document.getElementById('final_span'));
+      window.getSelection().addRange(range);
+    }
+    if (create_email) {
+      create_email = false;
+      createEmail();
+    }
+    
+    if(final_transcript.toUpperCase().includes('RIGHT')){
+      moveright();
+    }
+    else if(final_transcript.toUpperCase().includes('LEFT')){
+      moveleft();
+    }
+    else if(final_transcript.toUpperCase().includes('UP')){
+      moveup();
+    }
+    else if(final_transcript.toUpperCase().includes('DOWN')){
+      movedown(); 
+    }
+    else if(final_transcript.toUpperCase().includes('STOP')){
+      clearmove();
+    }
+    else{
+      splitTheString(final_transcript);
+    }
+  };
+  recognition.onresult = function(event) {
+    var interim_transcript = '';
+    for (var i = event.resultIndex; i < event.results.length; ++i) {
+      if (event.results[i].isFinal) {
+        final_transcript += event.results[i][0].transcript;
+      } else {
+        interim_transcript += event.results[i][0].transcript;
+      }
+    }
+    final_transcript = capitalize(final_transcript);
+    final_span.innerHTML = linebreak(final_transcript);
+    interim_span.innerHTML = linebreak(interim_transcript);
+    //splitTheString(final_transcript);
+  };
+function splitTheString(strToSplit) {
+  strArr = strToSplit.split(',')
+  getImage(strArr[0], strArr[1]);
+}
+  
+}
+function getImage(imageToSearch, categoryStr){
+  var API_KEY = '12343836-cdd4c715320c34576fbc1b6e4';
+  q = imageToSearch;
+  image_type= 'photo';
+  category = categoryStr;
+  lang='en';
+  page = 1
+  editors_choice = true;
+  safesearch = true
+  var URL = "https://pixabay.com/api/?key="+API_KEY+"&q="+encodeURIComponent(q)+"&image_type="+image_type+"&category="
+  +category+"&page="+page+"&safesearch="+safesearch+"&lang="+lang+"&editors_choice="+editors_choice;
+  breakOut = false;
+  pageurl = '';
+  $.getJSON(URL, function(data){
+  if (parseInt(data.totalHits) > 0){
+      $.each(data.hits, function(i, hit){ 
+          console.log(hit.webformatURL);
+          pageurl = hit.webformatURL;
+          }
+      );
+  }   
+  else
+      console.log('No hits');
+  startGame(pageurl)
+  });
+}
+
+var myGamePiece;
+
+function startGame(pageurl) {
+    //alert('startGame');
+    myGamePiece = new component(200, 200, pageurl, 20, 20, "image");
+    myGameArea.start();
+}
+
+var myGameArea = {
+    canvas : document.createElement("canvas"),
+    start : function() {
+        this.canvas.width = 1024;
+        this.canvas.height = 400;
+        //this.canvas.style.border = '1px solid red';
+        this.context = this.canvas.getContext("2d");
+        document.body.insertBefore(this.canvas, document.body.childNodes[0]);
+        //document.body.insertAfter(this.canvas, document.body.childNodes[0]);
+        this.frameNo = 0;
+        this.interval = setInterval(updateGameArea, 20);
+        },
+    clear : function() {
+        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    },
+    stop : function() {
+        clearInterval(this.interval);
+    }
+}
+
+function component(width, height, color, x, y, type) {
+    this.type = type;
+    if (type == "image") {
+        this.image = new Image();
+        this.image.src = color;
+        this.image.style.objectFit = "cover";
+    }
+    this.width = width;
+    this.height = height;
+    this.speedX = 0;
+    this.speedY = 0;    
+    this.x = x;
+    this.y = y;    
+    this.update = function() {
+        ctx = myGameArea.context;
+        if (type == "image") {
+            ctx.drawImage(this.image, 
+                this.x, 
+                this.y,
+                this.width, this.height);
+        } else {
+            ctx.fillStyle = color;
+            ctx.fillRect(this.x, this.y, this.width, this.height);
+        }
+    }
+    this.newPos = function() { 
+        this.x += this.speedX;
+        this.y += this.speedY; 
+    }
+    this.testMethod = function() {
+        var rockbottomH = this.myGameArea.canvas.height - this.height; 
+        var rockbottomW = this.myGameArea.canvas.width - this.width; 
+        alert('rockbottomH='+rockbottomH + 'rockbottomW='+rockbottomW);
+    }
+}
+
+function updateGameArea() {
+    myGameArea.clear();
+    myGamePiece.newPos();
+    myGamePiece.update();
+    myGamePiece.testMethod();
+}
+
+function moveup() {
+    myGamePiece.speedY = -1; 
+}
+
+function movedown() {
+    myGamePiece.speedY = 1; 
+}
+
+function moveleft() {
+    myGamePiece.speedX = -1; 
+}
+
+function moveright() {
+    myGamePiece.speedX = 1; 
+}
+
+function clearmove() {
+    myGamePiece.speedX = 0; 
+    myGamePiece.speedY = 0; 
+}
+
+
+
+
+
+
+function drawImage(strDataURI){
+    console.log('---------:' + strDataURI)
+    var myCanvas = document.getElementById('myCanvas');
+    var ctx = myCanvas.getContext('2d');
+    var img = new Image;
+    img.onload = function(){
+    ctx.drawImage(img,0,0,200,200); // Or at whatever offset you like
+    };
+    img.src = strDataURI;
+}
+
+function upgrade() {
+  start_button.style.visibility = 'hidden';
+  showInfo('info_upgrade');
+}
+var two_line = /\n\n/g;
+var one_line = /\n/g;
+function linebreak(s) {
+  return s.replace(two_line, '<p></p>').replace(one_line, '<br>');
+}
+var first_char = /\S/;
+function capitalize(s) {
+  return s.replace(first_char, function(m) { return m.toUpperCase(); });
+}
+function createEmail() {
+  var n = final_transcript.indexOf('\n');
+  if (n < 0 || n >= 80) {
+    n = 40 + final_transcript.substring(40).indexOf(' ');
+  }
+  var subject = encodeURI(final_transcript.substring(0, n));
+  var body = encodeURI(final_transcript.substring(n + 1));
+  window.location.href = 'mailto:?subject=' + subject + '&body=' + body;
+}
+function copyButton() {
+  if (recognizing) {
+    recognizing = false;
+    recognition.stop();
+  }
+  copy_button.style.display = 'none';
+  copy_info.style.display = 'inline-block';
+  showInfo('');
+}
+function emailButton() {
+  if (recognizing) {
+    create_email = true;
+    recognizing = false;
+    recognition.stop();
+  } else {
+    createEmail();
+  }
+  email_button.style.display = 'none';
+  email_info.style.display = 'inline-block';
+  showInfo('');
+}
+function startButton(event) {
+  if (recognizing) {
+    recognition.stop();
+    return;
+  }
+  final_transcript = '';
+  recognition.lang = select_dialect.value;
+  recognition.start();
+  ignore_onend = false;
+  final_span.innerHTML = '';
+  interim_span.innerHTML = '';
+  start_img.src = 'static/mic-slash.gif';
+  showInfo('info_allow');
+  start_timestamp = event.timeStamp;
+}
+function showInfo(s) {
+  if (s) {
+    for (var child = info.firstChild; child; child = child.nextSibling) {
+      if (child.style) {
+        child.style.display = child.id == s ? 'inline' : 'none';
+      }
+    }
+    info.style.visibility = 'visible';
+  } else {
+    info.style.visibility = 'hidden';
+  }
+}
+var current_style;
+</script>
