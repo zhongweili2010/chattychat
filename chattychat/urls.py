@@ -14,7 +14,6 @@ urlpatterns = [
     re_path(r'^chat/',include('apps.chat_app.urls')),
     re_path(r'^login/',include('apps.user_app.urls')),
     re_path(r'^api-auth/',include('rest_framework.urls',namespace='rest_framework')),
-    re_path(r'^logout/',include('apps.user_app.urls')),
 
 ]
 urlpatterns+=router.urls
