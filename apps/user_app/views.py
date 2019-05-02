@@ -35,7 +35,8 @@ def register(request):
                 new_user.groups_of.add(lobby_group)
                 print('add to lobby success')
             else:
-                ChatGroup.objects.create(name="lobby",users=new_user)
+                this_group=ChatGroup.objects.create(name="lobby")
+                new_user.groups_of.add(this_group)
 
 
 
