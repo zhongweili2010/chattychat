@@ -1,19 +1,25 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">  
+    <meta charset="UTF-8">
     <title>Chat App</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js" integrity="sha384-xrRywqdh3PHs8keKZN+8zzc5TX0GRTLCcmivcbNJWm2rs5C8PRhcEn3czEjhAO9o" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js"
+        integrity="sha384-xrRywqdh3PHs8keKZN+8zzc5TX0GRTLCcmivcbNJWm2rs5C8PRhcEn3czEjhAO9o"
+        crossorigin="anonymous"></script>
 
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
 
     <link rel="stylesheet" type="text/css" href="{% static 'chat_app/css/style.css' %}">
-    
+
 </head>
 
 <body>
@@ -24,7 +30,8 @@
                     <tr>
                         <td>
                             <div class="md-form mt-0 searchbar">
-                                <input class="form-control" type="text" placeholder="Search for friend" aria-label="Search">
+                                <input class="form-control" type="text" placeholder="Search for friend"
+                                    aria-label="Search">
                             </div>
                         </td>
                     </tr>
@@ -42,45 +49,58 @@
                     <tr>
                         <td>Logout</td>
                     </tr>
-                    
+
                 </table>
             </div>
         </div>
 
         <div class="main_right">
-            <h2>Welcome, Alex!</h2>
+            <h2>Welcome,{{this_user.first_name}} {{this_user.last_name}}!</h2>
 
-            <div class="main_right_rooms_p">
+            <!-- <div class="main_right_rooms_p">
                 <p class="room_num">You are currently in room: 123</p>
                 <div class="main_right_rooms">
                     <textarea class="chat_boxes" disabled="yes"></textarea>
                     <div class="input-group mb-3">
-                        <input type="text" class="form-control" placeholder="Send a msg..." aria-label="Recipient's username">
+                        <input type="text" class="form-control" placeholder="Send a msg..."
+                            aria-label="Recipient's username">
                         <div class="input-group-append">
                             <button class="input-group-text send_button">Send</button>
                         </div>
                     </div>
                 </div>
-            </div>
-        
-        
+            </div> -->
+
+
+
+            {%for group in all_groups%}
             <div class="main_right_rooms_p">
-                <p class="room_num">You are currently in room: 122</p>
+                <p class="room_num">Chatgroup: {{group.name}}           <a href="/chat/leave_group/{{group.id}}/">leave room</a></p>
+                <br>
+
                 <div class="main_right_rooms">
-                    <textarea class="chat_boxes" disabled="yes"></textarea>
-                    <div class="input-group mb-3">
-                        <input type="text" class="form-control" placeholder="Send a msg..." aria-label="Recipient's username">
-                        <div class="input-group-append">
-                            <button class="input-group-text send_button">Send</button>
-                        </div>
-                    </div>
+
+                    <textarea class="chat_boxes group-chat-log{{group.id}}" disabled="yes"></textarea>
+                    <!-- <div class="input-group mb-3"> -->
+                        <input type="text" class="form-control chat-message-input" placeholder="Send a msg..."
+                            aria-label="Recipient's username">
+
+                        <button class="input-group-text send_button group-message-submit" value="{{group.id}}">Send</button>
+
+                    <!-- </div> -->
                 </div>
             </div>
 
 
+            {%endfor%}
 
 
-            
+
+
+
+
+
+
         </div>
 
 
@@ -89,7 +109,7 @@
 
 
 
-        
+
         <div class="pop_window pop_profile">
             <div class="pop_container">
                 <div class="pop_container_pic">
@@ -99,7 +119,8 @@
                 <div class="input-group mb-3">
                     <div class="custom-file">
                         <input type="file" class="custom-file-input" id="inputGroupFile02">
-                        <label class="custom-file-label" for="inputGroupFile02" aria-describedby="inputGroupFileAddon02">Choose file</label>
+                        <label class="custom-file-label" for="inputGroupFile02"
+                            aria-describedby="inputGroupFileAddon02">Choose file</label>
                     </div>
                     <div class="input-group-append">
                         <span class="input-group-text" id="inputGroupFileAddon02">Upload</span>
@@ -113,14 +134,16 @@
 
         <div class="pop_window pop_room">
             <div class="pop_container">
-                <p>Entere room number here</p>
-                <div class="input-group mb-3" id="enter_room">
-                    <input type="text" class="form-control" placeholder="Enter room number" aria-label="Recipient's username" aria-describedby="basic-addon2">
-                    <div class="input-group-append">
-                      <span class="input-group-text" id="basic-addon2">Enter</span>
-                    </div>
-                </div>
-                
+                <p>Enter room number here</p>
+                <form action ="/chat/add_group/" method="POST" class="input-group mb-3" id="enter_room">
+                    {%csrf_token%}
+                    <input type="text" class="form-control" placeholder="Enter room number" name="room_name"
+                        aria-label="Recipient's username" aria-describedby="basic-addon2">
+                    <!-- <div class="input-group-append"> -->
+                        <button type="submit" class="input-group-text" id="basic-addon2">Enter</button>
+                    <!-- </div> -->
+                    </form>
+
             </div>
         </div>
 
@@ -135,52 +158,138 @@
 
     </div>
 
-<script>
-    
-    // Function to show/hide the chatrooms. If you click on the <p> part of the div w/ class called main_right_rooms_p, it will toggle the sibling <div>
-    $(".room_num").click(function(){
-        $(this).siblings("div").toggle();
-    })
+    <script>
 
-    // when hovering over the rooms, it changes colors
+        var this_user = '{{ this_user.username}}';
+        var chatSocket = new WebSocket(
+            'ws://' + window.location.host +
+            '/ws/chat/' + this_user + '/');
+        console.log(chatSocket);
+        // check if ENTER is pressed in the input 
+        $('.chat-message-input').keyup(function (e) {
+            if (e.keyCode === 13) {  // enter, return
+                this.nextElementSibling.click();
+            }
+        });
+
+        // direct messages----send input field message out to backend channels
+        $('.chat-message-submit').click(function () {
+            var messageInputDom = this.previousElementSibling;
+            var chatlog = messageInputDom.previousElementSibling;
+            console.log('message sent');
+            var user_id = this.value;
+            var message = messageInputDom.value;
+            chatlog.value += (message + '\n');
+
+            chatSocket.send(JSON.stringify({
+                'message': message,
+                'type': 'direct_message',
+                'receiver': user_id,
+            }));
+
+            messageInputDom.value = '';
+        })
+        //group messages----send input field message out to backend channels
+        $('.group-message-submit').click(function () {
+            console.log('message sent');
+            var messageInputDom = this.previousElementSibling;
+            var chatlog = messageInputDom.previousElementSibling;
+            var group_id = this.value;
+            var message = messageInputDom.value;
+            // chatlog.value += (message + '\n');
+            chatSocket.send(JSON.stringify({
+                'message': message,
+                'type': 'group_message',
+                'receiver': group_id,
+            }))
+            messageInputDom.value = '';
+
+        })
+
+        //receving messages from backend channels
+        chatSocket.onmessage = function (e) {
+
+            var data = JSON.parse(e.data);
+            var message = data['message'];
+            //direct messages
+            if ('sender_id' in data) {
+                var string = ".chat-log" + data['sender_id'];
+                console.log(string);
+                console.log(data);
+                document.querySelector(string).value += (message + '\n');
+            }
+            //group messages
+            else if ('group_id' in data) {
+                if (data['group_id'] == 'lobby') {
+                    selectorstring = ".chat-log-lobby";
+                }
+                else {
+                    selectorstring = ".group-chat-log" + data['group_id'];
+                }
+
+                document.querySelector(selectorstring).value += (message + '\n');
+            }
+        };
 
 
-    $(".room_num").mouseover(function(){
-        $(this).css("background-color", "skyblue");
-    })
-
-    $(".room_num").mouseout(function(){
-        $(this).css("background-color", "white");
-    })
+        //ws close
+        chatSocket.onclose = function (e) {
+            console.error('Chat socket closed unexpectedly');
+        };
 
 
-    // Below is for the "Profile" option
-    $("#profile").click(function(){
-        document.querySelector(".pop_profile").style.display = "inline"
-    })
+    </script>
 
-    // Below is for the "new chatroom" option
-    $("#new_room").click(function(){
-        document.querySelector(".pop_room").style.display = "inline"
-    })
 
-    // Below is for the "Your friends" option
-    $("#friends").click(function(){
-        document.querySelector(".pop_friends").style.display = "inline"
-    })
 
-    // This allows when the pop up window comes up, if you click anywhere outside, the pop up window is gone.
-    var pop_up_window = document.querySelectorAll(".pop_window");
 
-    window.onclick = function(event) {
-        for (var i=0; i < pop_up_window.length; i++) {
-        if (event.target == pop_up_window[i]) {
-            pop_up_window[i].style.display = "none"
+    <script>
+
+        // Function to show/hide the chatrooms. If you click on the <p> part of the div w/ class called main_right_rooms_p, it will toggle the sibling <div>
+        $(".room_num").click(function () {
+            $(this).siblings("div").toggle();
+        })
+
+        // when hovering over the rooms, it changes colors
+
+
+        $(".room_num").mouseover(function () {
+            $(this).css("background-color", "skyblue");
+        })
+
+        $(".room_num").mouseout(function () {
+            $(this).css("background-color", "white");
+        })
+
+
+        // Below is for the "Profile" option
+        $("#profile").click(function () {
+            document.querySelector(".pop_profile").style.display = "inline"
+        })
+
+        // Below is for the "new chatroom" option
+        $("#new_room").click(function () {
+            document.querySelector(".pop_room").style.display = "inline"
+        })
+
+        // Below is for the "Your friends" option
+        $("#friends").click(function () {
+            document.querySelector(".pop_friends").style.display = "inline"
+        })
+
+        // This allows when the pop up window comes up, if you click anywhere outside, the pop up window is gone.
+        var pop_up_window = document.querySelectorAll(".pop_window");
+
+        window.onclick = function (event) {
+            for (var i = 0; i < pop_up_window.length; i++) {
+                if (event.target == pop_up_window[i]) {
+                    pop_up_window[i].style.display = "none"
+                }
             }
         }
-    }
 
-</script>
+    </script>
 
 </body>
+
 </html>

@@ -83,7 +83,7 @@ def enter_room(request):
         else:
             this_group=ChatGroup.objects.create(name=room_name)
         this_group.users.add(request.user)
-        return redirect('/chat')
+        return redirect('/chat/')
     else:
         return HttpResponse('bad post')
     
