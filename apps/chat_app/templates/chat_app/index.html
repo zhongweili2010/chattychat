@@ -24,9 +24,13 @@
                     <tr>
                         <td>
                             <div class="md-form mt-0">
-                                <input class="form-control" type="text" placeholder="Search for friend" aria-label="Search">
+                                <input class="form-control search-friend" type="text" placeholder="Search for friend" aria-label="Search">
                             </div>
                         </td>
+                        <td id="friend-space" class="hidden">
+                            
+                        </td>
+                        
                     </tr>
                     <tr>
                         <td id="profile">Your profile</td>
@@ -40,7 +44,8 @@
                     </tr>
 
                     <tr>
-                        <td>Logout</td>
+                        <td><a href="/logout">Logout</a>
+                            </td>
                     </tr>
                     
                 </table>
@@ -48,7 +53,21 @@
         </div>
 
         <div class="main_right container">
-            <h2>Welcome, Alex!</h2>
+            <h2>Welcome, {{request.user}}!</h2>
+
+            <div class="main_right_rooms_p">
+                    <p class="room_num">You are currently in Lobby</p>
+                    <div class="main_right_rooms">
+                        <!-- merged websocket class with frontend class -SL 5/1/2019 -->
+                        <textarea class="chat_boxes chat-log-lobby" disabled="yes"></textarea>
+                        <div class="input-group mb-3">
+                            <input type="text" class="chat-message-input form-control" placeholder="Send a msg..." aria-label="Recipient's username">
+                            <div class="input-group-append">
+                                <button class=" group-message-submit input-group-text send_button">Send</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
             <div class="main_right_rooms_p">
                 <p class="room_num">You are currently in room: 123</p>
@@ -131,14 +150,144 @@
 
         <div class="pop_window pop_friends">
             <div class="pop_container">
-                <p>name:</p>
-                <p>blah blah balh</p>
+                <h2>Your friends:</h2>
+                <div> asdf
+                        <table class="friends-table">
+                            <tr>
+                                <th>First Name</th>
+                                <th>Last Name</th>
+                                <th>Email</th>
+                            </tr>
+                            {% for friend in all_friends %}
+                            <tr>
+                                <td>{{friend.first_name}}</td>
+                                <td>{{friend.last_name}}</td>
+                                <td>{{friend.email}}</td>
+                            </tr>
+                            {% endfor %}
+                        </table>
+                </div>
+                <!-- <table>
+                    <tr>
+                        <th>First Name</th>
+                        <th>Last Name</th>
+                        <th>Email</th>
+                    </tr>
+                    {% for friend in all_friends %}
+                    <tr>
+                        <td>{{friend.first_name}}</td>
+                        <td>{{friend.last_name}}</td>
+                        <td>{{friend.email}}</td>
+                    </tr>
+                    {% endfor %}
+                </table> -->
             </div>
         </div>
 
     </div>
 
 <script>
+
+    //WEBSOCKET SCRIPT
+
+    var this_user = '{{ this_user.username}}';
+    var chatSocket = new WebSocket(
+        'ws://' + window.location.host +
+        '/ws/chat/' + this_user+ '/');
+    console.log(chatSocket);
+    // check if ENTER is pressed in the input 
+    $('.chat-message-input').keyup(function(e) {
+        if (e.keyCode === 13) {  // enter, return
+            this.nextElementSibling.click();
+        }
+    });
+
+    // direct messages----send input field message out to backend channels
+    $('.chat-message-submit').click(function(){
+        var messageInputDom = this.previousElementSibling;
+        var chatlog=messageInputDom.previousElementSibling;
+        console.log('message sent');
+        var user_id = this.value;
+        var message = messageInputDom.value;
+        chatlog.value += (message + '\n');
+
+        chatSocket.send(JSON.stringify({
+            'message': message,
+            'type':'direct_message',
+            'receiver': user_id,
+        }));
+        
+        messageInputDom.value = '';
+    })
+    //group messages----send input field message out to backend channels
+    $('.group-message-submit').click(function(){
+        console.log('message sent');
+        var messageInputDom = this.previousElementSibling;
+        var chatlog=messageInputDom.previousElementSibling;
+        var group_id=this.value;
+        var message = messageInputDom.value;
+        chatlog.vallue+=(message+'\n');
+        chatSocket.send(JSON.stringify({
+            'message': message,
+            'type': 'group_message',
+            'receiver': group_id,
+        }))
+        messageInputDom.value = '';
+        
+    })
+
+    //receving messages from backend channels
+    chatSocket.onmessage = function(e) {
+        
+        var data = JSON.parse(e.data);
+        var message = data['message'];
+        //direct messages
+        if( 'sender_id' in data){
+            var string = ".chat-log"+data['sender_id'];
+            console.log(string);
+            console.log(data);
+            document.querySelector(string).value += (message + '\n');
+        }
+        //group messages
+        else if('group_id' in data){
+            if(data['group_id']=='lobby'){
+                selectorstring=".chat-log-lobby";
+            }
+            else{
+                selectorstring=".group-chat-log"+data['group_id'];
+            }
+
+            document.querySelector(selectorstring ).value +=(message + '\n');
+        }
+    };
+
+    //ws close
+    chatSocket.onclose = function(e) {
+        console.error('Chat socket closed unexpectedly');
+    };
+
+
+
+    //FRONTEND/BOOTSTRAP SCRIPT
+    function searchFriend(str){
+        if(str == 'hello'){
+            alert('hi')
+        }
+    }
+    // $(".search-friend").focus(function(){
+    //     // alert('focus!')
+    //     // $('body').css('background-color', 'red')
+    //     console.log($(this).val())
+    // })
+    $(".search-friend").focus(function(){
+        
+    })
+
+
+    $(".search-friend").focusout(function(){
+        // $('body').css('background-color', 'white')
+        console.log($(this).val())
+    })
     
     // Function to show/hide the chatrooms. If you click on the <p> part of the div w/ class called main_right_rooms_p, it will toggle the sibling <div>
     $(".room_num").click(function(){

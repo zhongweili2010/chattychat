@@ -23,6 +23,21 @@
     border: 2px black solid;
 }
 
+table, td, tr, th {
+    border: 1px solid black;
+}
+
+.pop_container {
+    text-align:center;
+}
+
+.friends-table {
+    margin: 0 auto;
+}
+.hidden{
+    opacity:0;
+}
+
 .main_left_holder {
     background-color: orange;
     position: sticky;
