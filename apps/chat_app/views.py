@@ -83,7 +83,11 @@ def enter_room(request):
         else:
             this_group=ChatGroup.objects.create(name=room_name)
         this_group.users.add(request.user)
+<<<<<<< HEAD
         return redirect('/chat/')
+=======
+        return redirect('/chat')
+>>>>>>> parent of 4c6ba31... 3 changes to index
     else:
         return HttpResponse('bad post')
     
