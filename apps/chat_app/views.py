@@ -64,14 +64,14 @@ def unfriend(request,number):
     return redirect('/chat')
 
 
-@login_required(login_url='/login')
-def multi_friend(request):
-    context={
-        'all_friends':request.user.friends.all(),
-        'this_user':request.user,
+# @login_required(login_url='/login')
+# def multi_friend(request):
+#     context={
+#         'all_friends':request.user.friends.all(),
+#         'this_user':request.user,
 
-    }
-    return render(request,'chat_app/platform.html',context)
+#     }
+#     return render(request,'chat_app/platform.html',context)
 
 
 @login_required(login_url='/login')
@@ -83,11 +83,7 @@ def enter_room(request):
         else:
             this_group=ChatGroup.objects.create(name=room_name)
         this_group.users.add(request.user)
-<<<<<<< HEAD
-        return redirect('/chat/')
-=======
         return redirect('/chat')
->>>>>>> parent of 4c6ba31... 3 changes to index
     else:
         return HttpResponse('bad post')
     

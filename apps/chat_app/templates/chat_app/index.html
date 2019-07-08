@@ -29,14 +29,9 @@
                 <table id="main_left_menu">
                     <tr>
                         <td>
-<<<<<<< HEAD
                             <div class="md-form mt-0 searchbar">
                                 <input class="form-control" type="text" placeholder="Search for friend"
                                     aria-label="Search">
-=======
-                            <div class="md-form mt-0">
-                                <input class="form-control" type="text" placeholder="Search for friend" aria-label="Search">
->>>>>>> parent of 4c6ba31... 3 changes to index
                             </div>
                         </td>
                     </tr>
@@ -59,17 +54,10 @@
             </div>
         </div>
 
-<<<<<<< HEAD
         <div class="main_right">
             <h2>Welcome,{{this_user.first_name}} {{this_user.last_name}}!</h2>
 
             <!-- <div class="main_right_rooms_p">
-=======
-        <div class="main_right container">
-            <h2>Welcome, Alex!</h2>
-
-            <div class="main_right_rooms_p">
->>>>>>> parent of 4c6ba31... 3 changes to index
                 <p class="room_num">You are currently in room: 123</p>
                 <div class="main_right_rooms">
                     <textarea class="chat_boxes" disabled="yes"></textarea>
@@ -170,7 +158,6 @@
 
     </div>
 
-<<<<<<< HEAD
     <script>
 
         var this_user = '{{ this_user.username}}';
@@ -253,50 +240,6 @@
 
     </script>
 
-=======
-<script>
-    
-    // Function to show/hide the chatrooms. If you click on the <p> part of the div w/ class called main_right_rooms_p, it will toggle the sibling <div>
-    $(".room_num").click(function(){
-        $(this).siblings("div").toggle();
-    })
-
-    // when hovering over the rooms, it changes colors
-    $(".room_num").mouseover(function(){
-        $(this).css("background-color", "aliceblue");
-    })
-
-    $(".room_num").mouseout(function(){
-        $(this).css("background-color", "white");
-    })
-
-
-    // Below is for the "Profile" option
-    $("#profile").click(function(){
-        document.querySelector(".pop_profile").style.display = "inline"
-    })
-
-    // Below is for the "new chatroom" option
-    $("#new_room").click(function(){
-        document.querySelector(".pop_room").style.display = "inline"
-    })
-
-    // Below is for the "Your friends" option
-    $("#friends").click(function(){
-        document.querySelector(".pop_friends").style.display = "inline"
-    })
-
-    // This allows when the pop up window comes up, if you click anywhere outside, the pop up window is gone.
-    var pop_up_window = document.querySelectorAll(".pop_window");
-
-    window.onclick = function(event) {
-        for (var i=0; i < pop_up_window.length; i++) {
-        if (event.target == pop_up_window[i]) {
-            pop_up_window[i].style.display = "none"
-            }
-        }
-    }
->>>>>>> parent of 4c6ba31... 3 changes to index
 
 
 
