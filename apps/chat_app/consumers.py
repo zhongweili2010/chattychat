@@ -8,17 +8,20 @@ from ..user_app.models import User
 
 from channels.auth import login,logout
 from channels.layers import get_channel_layer
+#following code uses two type of broadcasting strategies: One to One and One to Group, One to Group-but-one is not used
 class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         self.user = self.scope['user']
         #see if there is zombie client did not disconect, if there is   disconnect
         if Client.objects.filter(user=self.user).count()>0:
             Client.objects.get(user=self.user).delete()
+
+        #create a channel for this user
         this_channel=Client.objects.create(channel_name=self.channel_name,user=self.user)
         
         self.group_list=[]
 
-        #add current channel to all groups it suppose be on
+        #add current channel to all groups the user previously in
         if ChatGroup.objects.filter(users=self.user).count() >0:
             for group in ChatGroup.objects.filter(users=self.user).all():
                 group_name=str(group.id)
@@ -34,17 +37,19 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         await self.accept()
 
+    #remove the client on user disconnect so no duplicate clients exist
     async def disconnect(self, close_code):   
         Client.objects.get(user=self.user).delete()
         
 
-    # Receive message from WebSocket
+    # Receive messages from WebSockets INCOMING message
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
         message = text_data_json['message']
         message = f"{self.user.username} said : "+message
 
-        #send one to one to channel layer
+        #send one to one to channel layer 
+        # DIRECT message
         if text_data_json['type']=='direct_message':
             user_id=text_data_json['receiver']
 
@@ -64,7 +69,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 })
 
 
-        #sending group message to channel_layer
+        #sending group message to channel_layer  
+        # GROUP message
         elif text_data_json['type']=='group_message':
             # group=ChatGroup.objects.get(id=int(text_data_json[reciever]))
             await self.channel_layer.group_send(
@@ -76,8 +82,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     
                 })
 
-    #Receive from channel layer
+    #Receive from channel layer and sent to websocket
     async def chat_message(self, event):
+        #DIRECT Message
         if "sender_id" in event:
             message = event['message']
             sender_id=event['sender_id']
@@ -87,7 +94,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 'message': message,
                 'sender_id': sender_id,
             }))
-        #message from group to websocket
+        #GROUP Message
         elif "group" in event:
             message=event['message']
             group_id=event['group']      
