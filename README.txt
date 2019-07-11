@@ -1,6 +1,8 @@
 ====================================================================================================
 Hello, This is a Django Chat Application using Channels Project and redis server to achieve asyncous.
-The web app has customized consumer, backend validation, auth_user_model. Current version offers login and register,one to one chat as well as many to many chat. Deployed IP is subject to change, no domain name avaiable at this moment.
+The web app has customized consumer, backend validation, auth_user_model. Current version offers login and register,one to one chat as well as many to many chat. 
+
+Deployed IP is subject to change, no domain name avaiable at this moment.
 
 To run it on your own server/mac machine:
 1. need Docker,py3.6+, aside from requirements.txt
