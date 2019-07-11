@@ -1,6 +1,7 @@
+chattychat/settings.py
 migrations/
 __pycache__/
 .vscode
 db.sqlite3
 .DS_Store
-settings.py
+
