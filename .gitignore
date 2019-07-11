@@ -1,4 +1,4 @@
-chattychat/settings.py
+settings.*
 migrations/
 __pycache__/
 .vscode
