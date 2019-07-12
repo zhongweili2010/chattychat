@@ -19,7 +19,7 @@
         crossorigin="anonymous"></script>
 
     <link rel="stylesheet" type="text/css" href="{% static 'chat_app/css/style.css' %}">
-
+    
 </head>
 
 <body>
@@ -29,10 +29,16 @@
                 <table id="main_left_menu">
                     <tr>
                         <td>
-                            <div class="md-form mt-0 searchbar">
+                            <!-- <div class="md-form mt-0 searchbar">
                                 <input class="form-control" type="text" placeholder="Search for friend"
-                                    aria-label="Search">
-                            </div>
+                                    aria-label="Search"> -->
+                                <form class="md-form mt-0 searchbar" method="POST" action="{% url 'find_friend'%}">
+                                    {%csrf_token%}
+                                    <input type="text" class="form-control" id="txtSearch" name="txtSearch">
+                                    <button type="submit" class="btn btn-default btn-submit">Add Friend</button>
+                                </form>
+
+                            <!-- </div> -->
                         </td>
                     </tr>
                     <tr>
@@ -157,7 +163,7 @@
         </div>
 
     </div>
-
+    <script src="{% static 'chat_app/js/DjangoAjax.js'%}"></script>
     <script>
 
         var this_user = '{{ this_user.username}}';
@@ -290,6 +296,19 @@
 
     </script>
 
+    <script>
+        $(document).ready(function(){
+            $("#txtSearch").keyup(function(){
+                $.ajax({
+                    url:'/chat/findfriend/',
+                    method:'POST',
+                    data:{txtSearch:this.value}
+                })
+            })
+
+
+        })
+    </script>
 </body>
 
 </html>

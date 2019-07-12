@@ -18,7 +18,7 @@ def index(request):
     all_friends=request.user.friends.all()
     all_friends_ids=[x.id for x in all_friends]
     all_nonfriends=User.objects.exclude(Q(id__in=all_friends_ids) | Q(id=request.user.id))
-    print(all_nonfriends)
+    # print(all_nonfriends)
 
     
     context = {
@@ -41,6 +41,18 @@ def room(request,room_name):
     }
 
     return render(request,'chat_app/room.html', context)
+
+@login_required(login_url='/login')
+def find_friend(request):
+    if request.is_ajax:
+        print("*"*50)
+        q=request.POST["txtSearch"]
+        
+        
+        search_qs=User.objects.filter(email__startswith=q)[:6]
+        print(search_qs)
+
+
 @login_required(login_url='/login')
 def add_friend(request):
     if request.method=="POST":
@@ -57,6 +69,7 @@ def add_friend(request):
             return HttpResponse('cannot allow self add')
     else:
         return HttpResponse('bad post')
+
 @login_required(login_url='/login')
 def unfriend(request,number):
     this_friend=User.objects.get(id=number)
